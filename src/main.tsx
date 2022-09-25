@@ -6,8 +6,9 @@ import "./index.scss";
 import { aozTheme } from "./theme/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.min.css";
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <ThemeProvider theme={aozTheme}>
         <App />
       </ThemeProvider>
+      <ToastContainer />
       <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
     </QueryClientProvider>
   </React.StrictMode>

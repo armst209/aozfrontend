@@ -1,29 +1,16 @@
-import { Container, Box } from "@mui/material";
-import Footer from "./Footer";
-import Header from "./Header/index";
+import Navigation from "../Navigation/Navigation";
+import { Outlet } from "react-router-dom";
+import LayoutWrapper from "./LayoutWrapper";
 
-interface Props {
-  children: JSX.Element;
-  customHeader: boolean;
-}
-const GlobalLayout = ({ children, customHeader }: Props) => {
+const RootLayout = () => {
   return (
-    <Container
-      component="section"
-      maxWidth="lg"
-      sx={{
-        boxShadow: "5px 10px 5px 0px rgba(0,0,0,0.57)",
-        padding: "1rem",
-        backgroundColor: "#161b22",
-        borderRadius: ".5rem",
-        minHeight: "100vh",
-      }}
-    >
-      {customHeader ? <Box>Custom Header</Box> : <Header />}
-      {children}
-      <Footer />
-    </Container>
+    <>
+      <Navigation />
+      <LayoutWrapper customHeader={false}>
+        <Outlet />
+      </LayoutWrapper>
+    </>
   );
 };
 
-export default GlobalLayout;
+export default RootLayout;

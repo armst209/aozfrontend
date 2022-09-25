@@ -1,7 +1,17 @@
-import React from "react";
+import { useForm } from "react-hook-form";
 
 const Register = () => {
-  return <div>Register</div>;
+  const { register, handleSubmit } = useForm();
+  const onSubmit = (data: any) => console.log(data);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input></input>
+      <input></input>
+      <input></input>
+      <input></input>
+    </form>
+  );
 };
 
 export default Register;

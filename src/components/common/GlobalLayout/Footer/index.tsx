@@ -4,9 +4,9 @@ const Footer = () => {
   const currentDate = new Date().getFullYear();
   return (
     <footer>
-      <Typography variant="h6" component="p">
+      <Typography variant="h6" component="div">
         Copyright @ Aaron Armstrong
-        <Box>{currentDate}</Box>
+        <Box component="p">{currentDate}</Box>
       </Typography>
     </footer>
   );

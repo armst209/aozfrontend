@@ -12,3 +12,8 @@ export interface User {
   passwordResetCode: string | null;
   isVerified: boolean;
 }
+
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
