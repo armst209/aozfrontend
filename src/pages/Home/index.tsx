@@ -4,16 +4,15 @@ import axios from "axios";
 import { User } from "../../utils/customTypes";
 
 const Home = () => {
-  const getAllUsers = async () => {
-    const { data } = await axios.get("http://localhost:1337/api/users/");
-    return data;
-  };
-  const { data: users, isError, isLoading } = useQuery(["user"], getAllUsers);
+  // const getAllUsers = async () => {
+  //   const { data } = await axios.get("http://localhost:1337/api/users/");
+  //   return data;
+  // };
+  // const { data: users, isError, isLoading } = useQuery(["user"], getAllUsers);
 
-  console.log(users);
   return (
     <Box component="section">
-      {isLoading && <Box>Loading..</Box>}
+      {/* {isLoading && <Box>Loading..</Box>}
       {isError && <Box>Error!</Box>}
       {users?.map((user: User) => (
         <Box
@@ -31,7 +30,7 @@ const Home = () => {
           <Box component="li">{user.role}</Box>
           <Box component="li">{user.rank}</Box>
         </Box>
-      ))}
+      ))} */}
     </Box>
   );
 };

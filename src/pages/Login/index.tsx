@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { loginUser } from "../../utils/requestHandlers";
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation } from "@tanstack/react-query";
-import { TokenResponse, User } from "../../utils/customTypes";
+import { LoginData, TokenResponse, User } from "../../utils/customTypes";
 import { toast } from "react-toastify";
 import { loginPageSchema } from "../../utils/formValidation/formValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,13 +14,16 @@ const Login = () => {
   //button disabled state
   const [isBtnDisabled, setIsBtnDisabled] = useState(true);
   //local storage hook
-  const [userToken, setUserToken] = useLocalStorage("userToken", "");
+  const [userToken, setUserToken] = useLocalStorage<string | null>(
+    "userToken",
+    null
+  );
   //react-hook-form hook
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({
+  } = useForm<LoginData>({
     defaultValues: {
       email: "",
       password: "",
@@ -40,7 +43,7 @@ const Login = () => {
         navigateTo("/");
       } else {
         const errorMessage = "Token could not be set";
-        setUserToken("");
+        setUserToken(null);
         toast.error(errorMessage, {
           position: toast.POSITION.TOP_CENTER,
         });
@@ -48,11 +51,10 @@ const Login = () => {
       }
     },
     onError: (error: any) => {
-      const errorMessage = error.toString();
-      toast.error(errorMessage, {
+      toast.error(error.response.data, {
         position: toast.POSITION.TOP_CENTER,
       });
-      throw new Error(errorMessage);
+      throw new Error(error);
     },
   });
   //form submit handler
@@ -73,13 +75,12 @@ const Login = () => {
         <Controller
           name="email"
           control={control}
-          rules={{ required: true }}
           render={({ field }) => (
             <Input
               {...field}
               type="email"
               placeholder="Enter email"
-              error={errors.email ? true : false}
+              // error={errors.email ? true : false}
               sx={{
                 margin: ".5rem 0 .5rem 0",
                 color: "white",
@@ -97,13 +98,12 @@ const Login = () => {
         <Controller
           name="password"
           control={control}
-          rules={{ required: true }}
           render={({ field }) => (
             <Input
               {...field}
               type="password"
               placeholder="Enter password"
-              error={errors.password ? true : false}
+              // error={errors.password ? true : false}
               sx={{
                 margin: ".5rem 0 .5rem 0",
                 color: "white",
@@ -122,7 +122,7 @@ const Login = () => {
         <Button type="submit" variant="contained" disabled={isBtnDisabled}>
           {isLoading ? "Loading" : "Login"}
         </Button>
-        {isError && <Alert severity="error">{error.message}</Alert>}
+        {isError && <Alert severity="error">{error.response.data}</Alert>}
       </Box>
     </form>
   );
