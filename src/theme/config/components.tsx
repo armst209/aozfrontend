@@ -15,11 +15,11 @@ const components: Components = {
   MuiInput: {
     defaultProps: {
       sx: {
-        color: "white",
-        boxShadow: " 7px 9px 5px -6px rgba(0,0,0,0.68)",
-        paddingLeft: ".5rem",
-        backgroundColor: "#242424",
-        borderRadius: ".2rem",
+        // color: "white",
+        // boxShadow: " 7px 9px 5px -6px rgba(0,0,0,0.68)",
+        // paddingLeft: ".5rem",
+        // backgroundColor: "#242424",
+        // borderRadius: ".2rem",
       },
     },
   },

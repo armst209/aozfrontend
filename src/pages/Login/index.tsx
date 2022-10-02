@@ -1,54 +1,70 @@
-import { Button, Input, Box, Alert } from "@mui/material";
+import {
+  Button,
+  Box,
+  Alert,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import {
+  Visibility,
+  VisibilityOff,
+  Login as LoginButton,
+} from "@mui/icons-material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Controller, useForm } from "react-hook-form";
-import { loginUser } from "../../utils/requestHandlers";
+import { getSession, loginUser } from "../../utils/requestHandlers";
 import { useLocalStorage } from "usehooks-ts";
-import { useMutation } from "@tanstack/react-query";
-import { LoginData, TokenResponse, User } from "../../utils/customTypes";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { LoginData, User } from "../../utils/customTypes";
 import { toast } from "react-toastify";
-import { loginPageSchema } from "../../utils/formValidation/formValidation";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { loginPageSchema } from "../../utils/formValidation/validationSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+//add password adornment
+//set up theme - with correct colors
+
 const Login = () => {
-  //button disabled state
-  const [isBtnDisabled, setIsBtnDisabled] = useState(true);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [sessionData, setSessionData] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [inputError, setInputError] = useState({
+    email: false,
+    password: false,
+  });
   //local storage hook
-  const [userToken, setUserToken] = useLocalStorage<string | null>(
-    "userToken",
-    null
-  );
+  // const [userToken, setUserToken] = useLocalStorage<string | null>(
+  //   "userToken",
+  //   null
+  // );
   //react-hook-form hook
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginData>({
+    resolver: zodResolver(loginPageSchema),
     defaultValues: {
       email: "",
       password: "",
     },
-    reValidateMode: "onChange",
-    resolver: yupResolver(loginPageSchema),
   });
 
-  //router navigation hook
-  const navigateTo = useNavigate();
-  //react query hook
-  const { mutate, isLoading, isError, error } = useMutation(loginUser, {
-    onSuccess: (data: TokenResponse) => {
+  const { mutate, isLoading, isError, error, data } = useMutation(loginUser, {
+    onSuccess: (data) => {
+      console.log(data);
       //setting token in local storage
-      if (data.hasOwnProperty("accessToken")) {
-        setUserToken(data.accessToken.toString());
-        navigateTo("/");
-      } else {
-        const errorMessage = "Token could not be set";
-        setUserToken(null);
-        toast.error(errorMessage, {
-          position: toast.POSITION.TOP_CENTER,
-        });
-        throw new Error(errorMessage);
-      }
+      // navigateTo("/");
+
+      //   const errorMessage = "Token could not be set";
+      //   // setUserToken(null);
+      //   toast.error(errorMessage, {
+      //     position: toast.POSITION.TOP_CENTER,
+      //   });
+      //   throw new Error(errorMessage);
+      // }
     },
     onError: (error: any) => {
       toast.error(error.response.data, {
@@ -57,74 +73,129 @@ const Login = () => {
       throw new Error(error);
     },
   });
+  const handleGetSession = async () => {
+    const session = await getSession();
+    console.log(session);
+    setSessionData(session);
+  };
+
+  //handlers
+  const handlePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   //form submit handler
   const onSubmit = async (userData: Partial<User>) => {
     mutate(userData);
   };
 
+  //router navigation hook
+  const navigateTo = useNavigate();
+  //react query hook
+
   //useEffect for button disabled state
   useEffect(() => {
-    !errors.email && !errors.password
-      ? setIsBtnDisabled(false)
-      : setIsBtnDisabled(true);
-  }, [errors.email, errors.password]);
+    Object.keys(errors).length === 0
+      ? setIsButtonDisabled(false)
+      : setIsButtonDisabled(true);
 
+    errors.email
+      ? setInputError((prevState) => {
+          return {
+            ...prevState,
+            email: true,
+          };
+        })
+      : setInputError((prevState) => prevState);
+
+    errors.password
+      ? setInputError((prevState) => {
+          return {
+            ...prevState,
+            password: true,
+          };
+        })
+      : setInputError((prevState) => prevState);
+  }, [errors.email, errors.password, errors]);
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Box display="flex" flexDirection="column" padding="1rem">
-        <Controller
-          name="email"
-          control={control}
-          render={({ field }) => (
-            <Input
-              {...field}
-              type="email"
-              placeholder="Enter email"
-              // error={errors.email ? true : false}
-              sx={{
-                margin: ".5rem 0 .5rem 0",
-                color: "white",
-                boxShadow: " 7px 9px 5px -6px rgba(0,0,0,0.68)",
-                paddingLeft: ".5rem",
-                backgroundColor: "#242424",
-                borderRadius: ".2rem",
-              }}
-            />
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Box display="flex" flexDirection="column" padding="1rem">
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                name="email"
+                type="email"
+                label="Email"
+                error={inputError.email}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+              />
+            )}
+          />
+          {errors.email?.message && (
+            <Alert severity="error" sx={{ width: "100%" }}>
+              {errors.email?.message}
+            </Alert>
           )}
-        />
-        {errors.email && (
-          <Alert severity="error">{errors.email?.message}</Alert>
-        )}
-        <Controller
-          name="password"
-          control={control}
-          render={({ field }) => (
-            <Input
-              {...field}
-              type="password"
-              placeholder="Enter password"
-              // error={errors.password ? true : false}
-              sx={{
-                margin: ".5rem 0 .5rem 0",
-                color: "white",
-                boxShadow: " 7px 9px 5px -6px rgba(0,0,0,0.68)",
-                paddingLeft: ".5rem",
-                backgroundColor: "#242424",
-                borderRadius: ".2rem",
-              }}
-            />
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                name="password"
+                type={showPassword ? "text" : "password"}
+                label="Password"
+                placeholder="Enter password"
+                error={inputError.password}
+                margin="normal"
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handlePasswordVisibility}>
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
+          />
+          {errors.password && (
+            <Alert severity="error">{errors.password?.message}</Alert>
           )}
-        />
-
-        {errors.password && (
-          <Alert severity="error">{errors.password?.message}</Alert>
-        )}
-        <Button type="submit" variant="contained" disabled={isBtnDisabled}>
-          {isLoading ? "Loading" : "Login"}
-        </Button>
-        {isError && <Alert severity="error">{error.response.data}</Alert>}
+          <LoadingButton
+            sx={{ margin: ".5rem" }}
+            variant="contained"
+            fullWidth
+            disabled={isButtonDisabled}
+            loading={isLoading}
+            endIcon={<LoginButton />}
+            type="submit"
+          >
+            Login
+          </LoadingButton>
+          {isError && <Alert severity="error">{error.response.data}</Alert>}
+        </Box>
+      </form>
+      <Box sx={{ border: "2px solid black", color: "black", padding: ".5rem" }}>
+        {JSON.stringify(data)}
       </Box>
-    </form>
+
+      <button type="submit" onClick={handleGetSession}>
+        Get session data
+      </button>
+
+      <Box sx={{ border: "2px solid black", color: "black", padding: ".5rem" }}>
+        {sessionData}
+      </Box>
+    </>
   );
 };
 

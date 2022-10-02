@@ -14,7 +14,8 @@ const LayoutWrapper = ({ children, customHeader }: Props) => {
       sx={{
         boxShadow: "5px 10px 5px 0px rgba(0,0,0,0.57)",
         padding: "1rem",
-        backgroundColor: "#161b22",
+        // backgroundColor: "#161b22",
+        background: "white",
         borderRadius: ".5rem",
         minHeight: "100vh",
       }}

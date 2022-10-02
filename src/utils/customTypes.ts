@@ -13,10 +13,10 @@ export interface User {
   isVerified: boolean;
 }
 
-export interface TokenResponse {
-  accessToken: string;
-  refreshToken: string;
-}
+// export interface TokenResponse {
+//   accessToken: string;
+//   refreshToken: string;
+// }
 
 export interface LoginData {
   email: string;
