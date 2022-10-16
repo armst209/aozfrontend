@@ -13,12 +13,12 @@ import {
 } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Controller, useForm } from "react-hook-form";
-import { getSession, loginUser } from "../../utils/requestHandlers";
+import { getSession, loginUser } from "../../common/utils/requestHandlers";
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { LoginData, User } from "../../utils/customTypes";
+import { LoginData, User } from "../../common/utils/customTypes";
 import { toast } from "react-toastify";
-import { loginPageSchema } from "../../utils/formValidation/validationSchema";
+import { loginPageSchema } from "../../common/utils/formValidation/validationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -193,7 +193,7 @@ const Login = () => {
       </button>
 
       <Box sx={{ border: "2px solid black", color: "black", padding: ".5rem" }}>
-        {sessionData}
+        {JSON.stringify(sessionData)}
       </Box>
     </>
   );

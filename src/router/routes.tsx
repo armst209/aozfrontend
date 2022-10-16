@@ -1,7 +1,7 @@
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import RootLayout from "../components/common/GlobalLayout";
+import RootLayout from "../components/GlobalLayout";
 const routes = [
   {
     path: "/",

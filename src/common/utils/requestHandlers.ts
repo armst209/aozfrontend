@@ -1,5 +1,7 @@
 import axios from "axios";
-import { User } from "../utils/customTypes";
+import API_ENDPOINTS from "../api-endpoints";
+import axiosClient from "../axios-client";
+import { User } from "./customTypes";
 
 const baseUrl = "http://localhost:4000";
 
@@ -28,5 +30,15 @@ export const getSession = async () => {
     withCredentials: true,
     url: `${baseUrl}/api/admin/session`,
   });
+
   return data;
+};
+
+export const getAllUsers = async () => {
+  try {
+    const { data } = await axiosClient.get(API_ENDPOINTS.ADMIN.GET_ALL_USERS);
+    return data;
+  } catch (error) {
+    return error;
+  }
 };

@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { logoutUser } from "../../../../../utils/requestHandlers";
+import { logoutUser } from "../../../../common/utils/requestHandlers";
 
 const LogoutButton = () => {
   //router navigation hook

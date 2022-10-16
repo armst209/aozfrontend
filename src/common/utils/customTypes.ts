@@ -6,7 +6,7 @@ export interface User {
   password: string;
   team: string;
   rank: string;
-  role: string;
+  roles: string[];
   isAdmin: boolean;
   verificationCode: string;
   passwordResetCode: string | null;
