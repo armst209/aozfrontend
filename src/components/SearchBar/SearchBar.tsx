@@ -9,29 +9,26 @@ import {
 import { useEffect } from "react";
 import { useRenderCount } from "../../common/hooks/useRenderCount";
 import { useMemo, useRef } from "react";
-
 import _ from "lodash";
 
 interface SearchBarProps {
   placeHolderText: string;
   handleSearchQuery: (event: any) => void;
-  handleFuseSearchKeySelection: (event: any) => void;
+  handleSearchKeySelection: (event: any) => void;
 }
 
 const SearchBar = ({
-  placeHolderText,
-  handleFuseSearchKeySelection = () => {},
+  placeHolderText = "",
+  handleSearchKeySelection = () => {},
   handleSearchQuery = () => {},
 }: SearchBarProps) => {
   const muiInputRef = useRef<HTMLInputElement | null>(null);
   const renderCount = useRenderCount();
 
   const handleClearSearchInput = () => {
-    if (muiInputRef.current) {
-      const input: ChildNode | any =
-        muiInputRef.current.childNodes[0].childNodes[0];
-      input.value = "";
-    }
+    const input: ChildNode | any =
+      muiInputRef.current && muiInputRef.current.childNodes[0].childNodes[0];
+    input.value = "";
   };
   const debouncedQuerySearch = useMemo(
     () => _.debounce(handleSearchQuery, 1000),
@@ -64,7 +61,7 @@ const SearchBar = ({
             defaultValue={"name"}
             onChange={(e) => {
               handleClearSearchInput();
-              handleFuseSearchKeySelection(e);
+              handleSearchKeySelection(e);
             }}
           >
             <MenuItem value={"name"}>Name</MenuItem>
