@@ -1,10 +1,13 @@
 import axios from "axios";
-const baseURL = " http://localhost:4000/api";
+import API_ENDPOINTS from "./api-endpoints";
+
+/**
+ * !change withCredentials to true when httpOnly cookies enabled and cookies need to be set in local storage
+ **/
 
 const axiosClient = axios.create({
-  baseURL,
-  withCredentials: false, //change to true when httpOnly cookies enabled
-  headers: {},
+  baseURL: API_ENDPOINTS.BASE_URL,
+  withCredentials: true,
 });
 
 export default axiosClient;

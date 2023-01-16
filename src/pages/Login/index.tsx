@@ -22,6 +22,13 @@ import { loginPageSchema } from "../../common/utils/formValidation/validationSch
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../../common/store/useUserStore";
+import {
+  LOGIN_NOT_VALID,
+  LOGIN_NOT_VERIFIED,
+  LOGIN_FAILURE,
+  LOGIN_SUCCESS,
+} from "../../common/langauge";
 
 //add password adornment
 //set up theme - with correct colors
@@ -30,20 +37,17 @@ const Login = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [sessionData, setSessionData] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [inputError, setInputError] = useState({
     email: false,
     password: false,
   });
-  //local storage hook
-  // const [userToken, setUserToken] = useLocalStorage<string | null>(
-  //   "userToken",
-  //   null
-  // );
   //react-hook-form hook
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<LoginData>({
     resolver: zodResolver(loginPageSchema),
     defaultValues: {
@@ -51,33 +55,54 @@ const Login = () => {
       password: "",
     },
   });
+  const { setIsAdmin } = useUserStore();
+  const { mutate, isLoading, isError, error } = useMutation(
+    (userData: Partial<User>) => loginUser(userData),
+    {
+      onSuccess: (responseData) => {
+        switch (responseData.message) {
+          case LOGIN_SUCCESS:
+            setInputError({ email: false, password: false });
+            setErrorMessage("");
+            toast.success(responseData.message, {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000,
+            });
+            navigateTo("/");
+            break;
+          case LOGIN_FAILURE:
+          case LOGIN_NOT_VALID:
+          case LOGIN_NOT_VERIFIED:
+            toast.error(responseData.response.data.message, {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 5000,
+            });
+            setInputError({ email: true, password: true });
+            setErrorMessage(responseData.response.data.message);
+            setIsButtonDisabled(true);
+            reset();
+            break;
+          default:
+            toast.error(LOGIN_FAILURE, {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 5000,
+            });
+            setInputError({ email: true, password: true });
+            setErrorMessage(responseData.response.data.message);
+            setIsButtonDisabled(true);
+            reset();
+        }
 
-  const { mutate, isLoading, isError, error, data } = useMutation(loginUser, {
-    onSuccess: (data) => {
-      console.log(data);
-      //setting token in local storage
-      // navigateTo("/");
-
-      //   const errorMessage = "Token could not be set";
-      //   // setUserToken(null);
-      //   toast.error(errorMessage, {
-      //     position: toast.POSITION.TOP_CENTER,
-      //   });
-      //   throw new Error(errorMessage);
-      // }
-    },
-    onError: (error: any) => {
-      toast.error(error.response.data, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      throw new Error(error);
-    },
-  });
-  const handleGetSession = async () => {
-    const session = await getSession();
-    console.log(session);
-    setSessionData(session);
-  };
+        console.log(responseData);
+      },
+      onError: (error: any) => {
+        // toast.error(error.response.data, {
+        //   position: toast.POSITION.TOP_CENTER,
+        // });
+        // throw new Error(error);
+      },
+    }
+  );
 
   //handlers
   const handlePasswordVisibility = () => {
@@ -181,20 +206,9 @@ const Login = () => {
           >
             Login
           </LoadingButton>
-          {isError && <Alert severity="error">{error.response.data}</Alert>}
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         </Box>
       </form>
-      <Box sx={{ border: "2px solid black", color: "black", padding: ".5rem" }}>
-        {JSON.stringify(data)}
-      </Box>
-
-      <button type="submit" onClick={handleGetSession}>
-        Get session data
-      </button>
-
-      <Box sx={{ border: "2px solid black", color: "black", padding: ".5rem" }}>
-        {JSON.stringify(sessionData)}
-      </Box>
     </>
   );
 };

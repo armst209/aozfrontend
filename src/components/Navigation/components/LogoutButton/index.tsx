@@ -18,6 +18,7 @@ const LogoutButton = () => {
   // });
   const handleLogout = () => {
     logoutUser();
+    navigateTo("/login");
   };
   return (
     <Button onClick={handleLogout} variant="contained">
